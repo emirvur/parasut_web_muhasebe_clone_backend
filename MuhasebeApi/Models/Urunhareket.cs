@@ -11,8 +11,10 @@ namespace MuhasebeApi.Models
         public float Miktar { get; set; }
         public float? Brfiyat { get; set; }
         public float? Vergi { get; set; }
+        public int? Irsid { get; set; }
 
         public virtual Urun BarkodnoNavigation { get; set; }
         public virtual Fatura Fat { get; set; }
+        public virtual Irsaliye Irs { get; set; }
     }
 }

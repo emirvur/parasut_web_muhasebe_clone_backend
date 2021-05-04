@@ -49,8 +49,10 @@ namespace MuhasebeApi.Controllers
         {
             Odemeler od = await _context.Odemeler.SingleOrDefaultAsync(p => p.Odeid == op.id);
 
-            if (od.Topmik - od.Odendimik == 0)
+            if ((od.Topmik-op.odendim) - op.odendim == 0)
             {
+                List<Fatura> w = await _context.Fatura.Where(u => u.Odeid == op.id).ToListAsync();
+                w[0].Durum = 1;
                 od.Durum = 1;
                 od.Odendimik = od.Topmik;
             }
@@ -65,11 +67,11 @@ namespace MuhasebeApi.Controllers
             har.Aciklama = op.acik;
             har.Odendimik = op.odendim;
 
-            Kasa kasa = await _context.Kasa.FindAsync(op.kasid);
-            kasa.Bakiye = kasa.Bakiye -op.odendim;
+        //    Kasa kasa = await _context.Kasa.FindAsync(op.kasid);
+          //  kasa.Bakiye = kasa.Bakiye -op.odendim;
 
 
-            Kasahar kashar = new Kasahar { };
+          /*  Kasahar kashar = new Kasahar { };
             kashar.Kasaid = op.kasid;
             kashar.Durum = 2;
             kashar.Miktar = op.odendim;
@@ -77,12 +79,21 @@ namespace MuhasebeApi.Controllers
             kashar.Ohid = op.id;
             List<Kasahar> khcol = new List<Kasahar>();
             khcol.Add(kashar);
-            kasa.Kasahar = khcol;
+            kasa.Kasahar = khcol;*/
 
-            har.Kasa = kasa;
+         //   har.Kasa = kasa;
 
 
             _context.Odehar.Add(har);
+            await _context.SaveChangesAsync();
+            Kasahar kashar = new Kasahar { };
+            kashar.Kasaid = op.kasid;
+            kashar.Durum = 2;
+            kashar.Miktar = op.odendim;
+            kashar.Miktaraciklamasi = op.acik;
+            kashar.Ohid = har.Ohid;
+            kashar.Netbakiye = -1;
+            _context.Kasahar.Add(kashar);
             try
             {
                 await _context.SaveChangesAsync();

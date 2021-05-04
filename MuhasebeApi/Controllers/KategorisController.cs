@@ -69,7 +69,7 @@ namespace MuhasebeApi.Controllers
                     throw;
                 }
             }
-
+        
             return NoContent();
         }
 

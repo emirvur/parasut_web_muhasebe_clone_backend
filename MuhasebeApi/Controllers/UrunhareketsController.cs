@@ -26,6 +26,21 @@ namespace MuhasebeApi.Controllers
         {
             return await _context.Urunhareket.ToListAsync();
         }
+        [HttpPut("i/{fid}/{irsid}")]
+        public async Task<ActionResult> getirsurungun(int fid,List<int> irsid)
+        {
+            List<Urunhareket> li= await _context.Urunhareket.Where(a=>irsid.Contains(a.Irsid??-1)).ToListAsync();
+            int m = li.Count();
+          
+            for (int k = 0; k < m; k++)
+            {
+                li[k].Fatid = fid;
+             
+            }
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
 
         // GET: api/Urunharekets/5
         [HttpGet("{id}")]
@@ -55,6 +70,15 @@ namespace MuhasebeApi.Controllers
               v.Miktar, v.Brfiyat,v.Vergi??0, v.BarkodnoNavigation.Adi
                      )).ToListAsync();
         }
+
+        [HttpGet("i/{fid}")]
+        public async Task<ActionResult<IEnumerable<dtoirsurunhar>>> getirsurunha(int fid)
+        {
+            return await _context.Urunhareket.Where(m => m.Irsid == fid).Select(v => new dtoirsurunhar( v.Barkodno,
+                  v.Miktar, v.Brfiyat, v.Vergi ?? 0, v.BarkodnoNavigation.Adi
+                         )).ToListAsync();
+        }
+
 
 
         [HttpGet("st/{id}")]

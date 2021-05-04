@@ -35,6 +35,23 @@ namespace MuhasebeApi.Controllers
           
                    )).ToListAsync();
         }
+        [HttpGet("m/ac")]
+        public async Task<ActionResult<IEnumerable<dtocarilist>>> GetmusacCari()
+        {
+            return await _context.Cari.Where(a => a.Hangicari == 1).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+                    v.Kat.Katadi, v.Bakiye
+
+                       )).ToListAsync();
+        }
+        [HttpGet("m/ca")]
+        public async Task<ActionResult<IEnumerable<dtocarilist>>> GetmuscaCari()
+        {
+            return await _context.Cari.Where(a => a.Hangicari == 1).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+                    v.Kat.Katadi, v.Bakiye
+
+                       )).ToListAsync();
+        }
+
 
         [HttpGet("t")]
         public async Task<ActionResult<IEnumerable<dtocarilist>>> getted()
@@ -45,6 +62,22 @@ namespace MuhasebeApi.Controllers
                        )).ToListAsync();
         }
 
+        [HttpGet("t/ac")]
+        public async Task<ActionResult<IEnumerable<dtocarilist>>> gettedac()
+        {
+            return await _context.Cari.Where(a => a.Hangicari == 2).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+                    v.Kat.Katadi, v.Bakiye
+
+                       )).OrderByDescending(b=>b.bakiye).ToListAsync();
+        }
+        [HttpGet("t/ca")]
+        public async Task<ActionResult<IEnumerable<dtocarilist>>> gettedca()
+        {
+            return await _context.Cari.Where(a => a.Hangicari == 2).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+                    v.Kat.Katadi, v.Bakiye
+
+                       )).ToListAsync();
+        }
 
 
         // GET: api/Caris/5

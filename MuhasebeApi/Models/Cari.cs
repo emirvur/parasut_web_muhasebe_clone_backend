@@ -8,6 +8,7 @@ namespace MuhasebeApi.Models
         public Cari()
         {
             Fatura = new HashSet<Fatura>();
+            Irsaliye = new HashSet<Irsaliye>();
         }
 
         public int CariId { get; set; }
@@ -26,5 +27,6 @@ namespace MuhasebeApi.Models
 
         public virtual Kategori Kat { get; set; }
         public virtual ICollection<Fatura> Fatura { get; set; }
+        public virtual ICollection<Irsaliye> Irsaliye { get; set; }
     }
 }

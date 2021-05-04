@@ -18,6 +18,7 @@ namespace MuhasebeApi.Models
         public virtual DbSet<Calisan> Calisan { get; set; }
         public virtual DbSet<Cari> Cari { get; set; }
         public virtual DbSet<Fatura> Fatura { get; set; }
+        public virtual DbSet<Irsaliye> Irsaliye { get; set; }
         public virtual DbSet<Kasa> Kasa { get; set; }
         public virtual DbSet<Kasahar> Kasahar { get; set; }
         public virtual DbSet<Kategori> Kategori { get; set; }
@@ -28,14 +29,6 @@ namespace MuhasebeApi.Models
         public virtual DbSet<Urun> Urun { get; set; }
         public virtual DbSet<Urunhareket> Urunhareket { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.;Database=Muhasebe;Trusted_Connection=True;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -152,6 +145,8 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.CariId).HasColumnName("cari_id");
 
+                entity.Property(e => e.Durum).HasColumnName("durum");
+
                 entity.Property(e => e.Duztarih)
                     .HasColumnName("duztarih")
                     .HasColumnType("smalldatetime");
@@ -194,6 +189,45 @@ namespace MuhasebeApi.Models
                     .WithMany(p => p.Fatura)
                     .HasForeignKey(d => d.Tahsid)
                     .HasConstraintName("FK_Fatura_Tahsilat");
+            });
+
+            modelBuilder.Entity<Irsaliye>(entity =>
+            {
+                entity.HasKey(e => e.Irsid);
+
+                entity.ToTable("irsaliye");
+
+                entity.Property(e => e.Irsid).HasColumnName("irsid");
+
+                entity.Property(e => e.Aciklama)
+                    .IsRequired()
+                    .HasColumnName("aciklama")
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Araind).HasColumnName("araind");
+
+                entity.Property(e => e.Aratop).HasColumnName("aratop");
+
+                entity.Property(e => e.CariId).HasColumnName("cariId");
+
+                entity.Property(e => e.Fatmi).HasColumnName("fatmi");
+
+                entity.Property(e => e.Geneltop).HasColumnName("geneltop");
+
+                entity.Property(e => e.Kdv).HasColumnName("kdv");
+
+                entity.Property(e => e.Tarih)
+                    .HasColumnName("tarih")
+                    .HasColumnType("smalldatetime");
+
+                entity.Property(e => e.Tur).HasColumnName("tur");
+
+                entity.HasOne(d => d.Cari)
+                    .WithMany(p => p.Irsaliye)
+                    .HasForeignKey(d => d.CariId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_irsaliye_Cari");
             });
 
             modelBuilder.Entity<Kasa>(entity =>
@@ -474,6 +508,8 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Fatid).HasColumnName("fatid");
 
+                entity.Property(e => e.Irsid).HasColumnName("irsid");
+
                 entity.Property(e => e.Miktar).HasColumnName("miktar");
 
                 entity.Property(e => e.Vergi).HasColumnName("vergi");
@@ -488,6 +524,11 @@ namespace MuhasebeApi.Models
                     .WithMany(p => p.Urunhareket)
                     .HasForeignKey(d => d.Fatid)
                     .HasConstraintName("FK_Urunhareket_Fatura");
+
+                entity.HasOne(d => d.Irs)
+                    .WithMany(p => p.Urunhareket)
+                    .HasForeignKey(d => d.Irsid)
+                    .HasConstraintName("FK_Urunhareket_irsaliye");
             });
 
             OnModelCreatingPartial(modelBuilder);

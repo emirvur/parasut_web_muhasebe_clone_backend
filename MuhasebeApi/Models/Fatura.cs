@@ -22,6 +22,7 @@ namespace MuhasebeApi.Models
         public float? Kdv { get; set; }
         public float Geneltoplam { get; set; }
         public int? Odeid { get; set; }
+        public int? Durum { get; set; }
 
         public virtual Cari Cari { get; set; }
         public virtual Kategori Kat { get; set; }

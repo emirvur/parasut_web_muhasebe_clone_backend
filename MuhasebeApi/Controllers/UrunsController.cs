@@ -27,6 +27,18 @@ namespace MuhasebeApi.Controllers
             return await _context.Urun.Include(c=>c.Kategori).Select(v=>new dtourun(v.Barkodno,v.Adi,v.KategoriId
                 ,v.Kategori.Katadi,v.Birim,v.Krseviye,v.Verharal,v.Verharsat,v.Kdv,v.Adet)).ToListAsync();
         }
+        [HttpGet("ac")]
+        public async Task<ActionResult<IEnumerable<dtourun>>> GetazdancogaUrun()
+        {
+            return await _context.Urun.Include(c => c.Kategori).OrderBy(o => o.Adet).Select(v => new dtourun(v.Barkodno, v.Adi, v.KategoriId
+                  , v.Kategori.Katadi, v.Birim, v.Krseviye, v.Verharal, v.Verharsat, v.Kdv, v.Adet)).ToListAsync();
+        }
+        [HttpGet("ca")]
+        public async Task<ActionResult<IEnumerable<dtourun>>> GetcoktanazaUrun()
+        {
+            return await _context.Urun.Include(c => c.Kategori).OrderByDescending(o => o.Adet).Select(v => new dtourun(v.Barkodno, v.Adi, v.KategoriId
+                  , v.Kategori.Katadi, v.Birim, v.Krseviye, v.Verharal, v.Verharsat, v.Kdv, v.Adet)).ToListAsync();
+        }
 
 
         [HttpGet("r")]
@@ -39,7 +51,7 @@ namespace MuhasebeApi.Controllers
             //    return st;
 
             return await _context.Urun.GroupBy(x => true)
-          .Select(x => new stokrapor(x.Sum(y => y.Verharal),x.Sum(y => y.Verharsat)
+          .Select(x => new stokrapor(x.Sum(y => y.Adet*y.Verharal),x.Sum(y => y.Adet*y.Verharsat)
           )).FirstOrDefaultAsync();
         }
 
