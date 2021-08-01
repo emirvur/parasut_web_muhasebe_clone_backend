@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -10,6 +11,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class IrsaliyesController : ControllerBase
@@ -50,6 +52,13 @@ namespace MuhasebeApi.Controllers
 
             
         }
+        [HttpGet("x")]
+        public ActionResult<object> getfattest11()
+        {
+        return    _context.Database.ExecuteSqlRaw("exec faturatest");
+       
+
+        }
 
         [HttpGet("t/{mail}")]
         public ActionResult<int> gettest11(string mail)
@@ -60,7 +69,17 @@ namespace MuhasebeApi.Controllers
 
 
         }
+        [HttpGet("m/{ad}")]
+        public async Task<ActionResult<IEnumerable<dtoirsaliye>>> GetListirs(string ad)
+        {
 
+            return await _context.Irsaliye.Where(c => c.Aciklama.Contains(ad))
+                .Select(v => new dtoirsaliye(v.Irsid, v.Tur, v.CariId, v.Cari.Cariunvani, v.Aratop, v.Araind, v.Kdv, v.Geneltop,
+             v.Tarih, v.Fatmi, v.Aciklama
+
+                    )).ToListAsync();
+
+        }
 
         [HttpGet("i")]
         public async Task<ActionResult<IEnumerable<dtoirsaliye>>> gettumirs()
@@ -75,13 +94,28 @@ namespace MuhasebeApi.Controllers
 
 
         }
-        [HttpGet("{ilktar}/{sontar}")]
-        public async Task<ActionResult<IEnumerable<dtoirsaliye>>> gettarihirs(string ilktar,string sontar)
+        [HttpGet("{cid}/{ilktar}/{sontar}")]
+        public async Task<ActionResult<IEnumerable<dtoirsaliye>>> gettarihirs(int cid,DateTime ilktar,DateTime sontar)
         {
             DateTime g = Convert.ToDateTime(ilktar);
             DateTime k = Convert.ToDateTime(sontar);
 
-            return await _context.Irsaliye.Where(a => a.Fatmi == 0).Where(b=>b.Tarih>=g&&b.Tarih<=k)//.Include(c => c)
+            return await _context.Irsaliye.Where(a => a.Fatmi == 0).Where(b=>b.CariId==cid).Where(n=>n.Tarih>=g&&n.Tarih<=k
+            )//.Include(c => c)
+              .Select(v => new dtoirsaliye(v.Irsid, v.Tur, v.CariId, v.Cari.Cariunvani, v.Aratop, v.Araind, v.Kdv, v.Geneltop,
+              v.Tarih, v.Fatmi, v.Aciklama
+
+                     )).ToListAsync();
+
+
+        }
+        [HttpGet("c/{cid}")]
+        public async Task<ActionResult<IEnumerable<dtoirsaliye>>> getcarirs(int cid)
+        {
+            //  DateTime g = Convert.ToDateTime(ilktar);
+            //    DateTime k = Convert.ToDateTime(sontar);
+
+            return await _context.Irsaliye.Where(a => a.Fatmi == 0).Where(b => b.CariId == cid )//.Include(c => c)
               .Select(v => new dtoirsaliye(v.Irsid, v.Tur, v.CariId, v.Cari.Cariunvani, v.Aratop, v.Araind, v.Kdv, v.Geneltop,
               v.Tarih, v.Fatmi, v.Aciklama
 
@@ -94,88 +128,103 @@ namespace MuhasebeApi.Controllers
         // PUT: api/Irsaliyes/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}/{ilktar}/{sontar}")]
-        public async Task<IActionResult> PutIrsaliye(int id, string ilktar, string sontar)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutIrsaliye(int id)
         {
-            DateTime g = Convert.ToDateTime(ilktar);
-            DateTime t = Convert.ToDateTime(sontar);
+            var transaction = _context.Database.BeginTransaction();
 
-            List<Irsaliye> irli = await _context.Irsaliye.Where(a => a.CariId == id&&a.Fatmi==0).Where(b => b.Tarih >= g && b.Tarih <= t)
-           .ToListAsync();
-            float arat = 0;
-            float arai = 0;
-            float kd = 0;
-            float ge = 0;
+            try {
 
-            int m = irli.Count();
-            int n = 0;
-            for (int k = 0; k < m; k++)
-            {
-                irli[k].Fatmi = 1;
-                arat = arat + irli[k].Aratop;
-                arai = arai + irli[k].Araind;
-                kd = kd + irli[k].Kdv;
-                ge = ge + irli[k].Geneltop;
-            }
+              //  DateTime g = Convert.ToDateTime(ilktar);
+            //    DateTime t = Convert.ToDateTime(sontar);
+
+                List<Irsaliye> irli = await _context.Irsaliye.Where(a => a.CariId == id && a.Fatmi == 0)//.Where(b => b.Tarih >= g && b.Tarih <= t)
+               .ToListAsync();
+                float arat = 0;
+                float arai = 0;
+                float kd = 0;
+                float ge = 0;
+
+                int m = irli.Count();
+                int n = 0;
+                for (int k = 0; k < m; k++)
+                {
+                    irli[k].Fatmi = 1;
+                    arat = arat + irli[k].Aratop;
+                  //  arai = arai + irli[k].Araind;
+                    kd = kd + irli[k].Kdv;
+                    ge = ge + irli[k].Geneltop;
+                }
 
 
-            Tahsilat tah = new Tahsilat { };
-            tah.Kasaid = 9;
-            tah.Aciklama =  "";
-            tah.Durum =0;
-         
-              tah.Vadetarih = DateTime.Now;
+                Tahsilat tah = new Tahsilat { };
+                tah.Kasaid = 9;
+                tah.Aciklama = "";
+                tah.Durum = 0;
 
-         
+                tah.Vadetarih = DateTime.Now;
 
-            tah.Alinmismik = 0;
-            tah.Topmik = ge;
-            tah.Fatad = "";
-            tah.Duzt = DateTime.Now;
 
-            Fatura fa = new Fatura { };
 
-            fa.Tahs = tah;
-            fa.Geneltoplam = ge;
-            fa.Katid = 1;
-            fa.CariId = id;
-            fa.Duztarih = DateTime.Now;
-            fa.FatTur = 1;
-            fa.Fataciklama = "";
-            fa.Katid = 1;
-            fa.Aratop = arat;
-            fa.Kdv = kd;
+                tah.Alinmismik = 0;
+                tah.Topmik = ge;
+                tah.Fatad = "";
+                tah.Duzt = DateTime.Now;
 
-       
+                Fatura fa = new Fatura { };
+
+                fa.Tahs = tah;
+                fa.Geneltoplam = ge;
+                fa.Katid = 1;
+                fa.CariId = id;
+                fa.Duztarih = DateTime.Now;
+                fa.FatTur = 1;
+                fa.Fataciklama = "irsaliyefaturası "+DateTime.Now.ToShortTimeString();
+                fa.Katid = 1;
+                fa.Aratop = arat;
+                fa.Kdv = kd;
+
+
                 fa.Durum = 0;
-         
-
-         //   fa.Urunhareket = pf.hareket;
 
 
-            _context.Fatura.Add(fa);
+              //  fa.Urunhareket= new List<Urunhareket>();//pf.hareket;
 
-            await _context.SaveChangesAsync();
 
-            int z = irli.Count();
-            List<int> idler = new List<int>();
-           
-            for(int o = 0; o < z; o++)
+                _context.Fatura.Add(fa);
+                Fatura fatu = fa;
+
+                await _context.SaveChangesAsync();
+
+                int z = irli.Count();
+                List<int> idler = new List<int>();
+
+                for (int o = 0; o < z; o++)
+                {
+                    idler.Add(irli[o].Irsid);
+                }
+
+                List<Urunhareket> li = await _context.Urunhareket.Where(a => idler.Contains(a.Irsid??-1)).ToListAsync();
+                int q = li.Count();
+
+                for (int k = 0; k < q; k++)
+                {
+                    li[k].Fatid = fa.Fatid;
+                    
+
+                }
+                await _context.SaveChangesAsync();
+                transaction.Commit();
+                return Ok(fatu);//CreatedAtAction("GetFatura", new { id = fa.Fatid }, fa);
+            }
+            catch(Exception e)
             {
-                idler.Add(irli[o].Irsid);
+                transaction.Rollback();
+                return NotFound();
             }
 
-            List<Urunhareket> li = await _context.Urunhareket.Where(a => idler.Contains(a.Irsid ?? -1)).ToListAsync();
-            int q = li.Count();
 
-            for (int k = 0; k < q; k++)
-            {
-                li[k].Fatid = fa.Fatid;
-
-            }
-            await _context.SaveChangesAsync();
-            return Ok();
-         //   return Ok(fa.Fatid); //CreatedAtAction("GetKategori", new { id = fa.Fatid });
+     
         }
 
 

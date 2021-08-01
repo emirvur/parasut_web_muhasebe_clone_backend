@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CarisController : ControllerBase
@@ -38,7 +40,7 @@ namespace MuhasebeApi.Controllers
         [HttpGet("m/ac")]
         public async Task<ActionResult<IEnumerable<dtocarilist>>> GetmusacCari()
         {
-            return await _context.Cari.Where(a => a.Hangicari == 1).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+            return await _context.Cari.Where(a => a.Hangicari == 1).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
                     v.Kat.Katadi, v.Bakiye
 
                        )).ToListAsync();
@@ -46,7 +48,7 @@ namespace MuhasebeApi.Controllers
         [HttpGet("m/ca")]
         public async Task<ActionResult<IEnumerable<dtocarilist>>> GetmuscaCari()
         {
-            return await _context.Cari.Where(a => a.Hangicari == 1).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+            return await _context.Cari.Where(a => a.Hangicari == 1).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
                     v.Kat.Katadi, v.Bakiye
 
                        )).ToListAsync();
@@ -65,7 +67,7 @@ namespace MuhasebeApi.Controllers
         [HttpGet("t/ac")]
         public async Task<ActionResult<IEnumerable<dtocarilist>>> gettedac()
         {
-            return await _context.Cari.Where(a => a.Hangicari == 2).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+            return await _context.Cari.Where(a => a.Hangicari == 2).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
                     v.Kat.Katadi, v.Bakiye
 
                        )).OrderByDescending(b=>b.bakiye).ToListAsync();
@@ -73,7 +75,7 @@ namespace MuhasebeApi.Controllers
         [HttpGet("t/ca")]
         public async Task<ActionResult<IEnumerable<dtocarilist>>> gettedca()
         {
-            return await _context.Cari.Where(a => a.Hangicari == 2).OrderBy(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
+            return await _context.Cari.Where(a => a.Hangicari == 2).OrderByDescending(b => b.Bakiye).Select(v => new dtocarilist(v.CariId, v.Cariunvani,
                     v.Kat.Katadi, v.Bakiye
 
                        )).ToListAsync();

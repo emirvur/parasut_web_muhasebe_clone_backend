@@ -8,7 +8,7 @@ namespace MuhasebeApi.Models
     public class dtourun
     {
 
-        public dtourun(int bar, string ad, int katid, string katad, string birim, float? krs,
+        public dtourun(string bar, string ad, int katid, string katad, string birim, float? krs,
              float veral, float versat, float kdve, float adet)
         {
             this.Barkodno = bar; this.Adi = ad; this.KategoriId = katid; this.Kategoriad = katad;
@@ -16,7 +16,7 @@ namespace MuhasebeApi.Models
             this.Kdv = kdve; this.Adet = adet;
 
         }
-        public int Barkodno { get; set; }
+        public string Barkodno { get; set; }
         public string Adi { get; set; }
         public int KategoriId { get; set; }
         public string Kategoriad { get; set; }

@@ -7,7 +7,7 @@ namespace MuhasebeApi.Models
 {
     public class dtoirsurunhar
     {
-        public dtoirsurunhar(int bno, float mi, float? brf, float? ver, string urad
+        public dtoirsurunhar(string bno, float mi, float? brf, float? ver, string urad
 )
         {
           this.Barkodno = bno; this.Miktar = mi; this.Brfiyat = brf; this.Vergi = ver;
@@ -18,7 +18,7 @@ namespace MuhasebeApi.Models
         
 
 
-        public int Barkodno { get; set; }
+        public string Barkodno { get; set; }
 
         public float Miktar { get; set; }
         public float? Brfiyat { get; set; }

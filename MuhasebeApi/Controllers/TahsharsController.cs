@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TahsharsController : ControllerBase
@@ -44,7 +46,7 @@ namespace MuhasebeApi.Controllers
         [HttpGet("f/{id}")]
         public async Task<ActionResult<IEnumerable<dtothasharsatfat>>> GetsatTahshar(int id)
         {
-            var tahshar = await _context.Tahshar.Where(a=>a.Tahsid==id).Select(v => new dtothasharsatfat(v.Thid,v.Tahsid,v.Tediltar,v.Kasaid,v.Aciklama
+            var tahshar = await _context.Tahshar.Where(a=>a.Tahsid==id).OrderByDescending(h => h.Tediltar).Select(v => new dtothasharsatfat(v.Thid,v.Tahsid,v.Tediltar,v.Kasaid,v.Kasa.KasaAd,v.Aciklama
                 ,v.Alinmismik,v.Kasa.KasaAd
                    )).ToListAsync();
 

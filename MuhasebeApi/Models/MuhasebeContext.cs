@@ -28,10 +28,18 @@ namespace MuhasebeApi.Models
         public virtual DbSet<Tahsilat> Tahsilat { get; set; }
         public virtual DbSet<Urun> Urun { get; set; }
         public virtual DbSet<Urunhareket> Urunhareket { get; set; }
+        public virtual DbSet<gunceldurum> gunceldurum { get; set; }
+        public virtual DbSet<gunceldurummod1> gunceldurummod1 { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<gunceldurum>(es =>
+            { es.HasNoKey(); });
+            modelBuilder.Entity<gunceldurummod1>(es =>
+            { es.HasNoKey(); });
+
             modelBuilder.Entity<Calisan>(entity =>
             {
                 entity.HasKey(e => e.Calid);
@@ -149,7 +157,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Duztarih)
                     .HasColumnName("duztarih")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.FatTur).HasColumnName("fat_tur");
 
@@ -219,7 +227,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Tarih)
                     .HasColumnName("tarih")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Tur).HasColumnName("tur");
 
@@ -322,7 +330,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Odenmistar)
                     .HasColumnName("odenmistar")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.HasOne(d => d.Kasa)
                     .WithMany(p => p.Odehar)
@@ -352,7 +360,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Duzt)
                     .HasColumnName("duzt")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Fatad)
                     .HasColumnName("fatad")
@@ -365,11 +373,11 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Odenecektar)
                     .HasColumnName("odenecektar")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Odenmistar)
                     .HasColumnName("odenmistar")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Topmik).HasColumnName("topmik");
 
@@ -400,7 +408,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Tediltar)
                     .HasColumnName("tediltar")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.HasOne(d => d.Kasa)
                     .WithMany(p => p.Tahshar)
@@ -432,7 +440,7 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Duzt)
                     .HasColumnName("duzt")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Fatad)
                     .HasColumnName("fatad")
@@ -443,13 +451,13 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Tediltar)
                     .HasColumnName("tediltar")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.Property(e => e.Topmik).HasColumnName("topmik");
 
                 entity.Property(e => e.Vadetarih)
                     .HasColumnName("vadetarih")
-                    .HasColumnType("smalldatetime");
+                    .HasColumnType("date");
 
                 entity.HasOne(d => d.Kasa)
                     .WithMany(p => p.Tahsilat)
@@ -463,7 +471,8 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Barkodno)
                     .HasColumnName("barkodno")
-                    .ValueGeneratedNever();
+                    .HasMaxLength(13)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Adet).HasColumnName("adet");
 
@@ -502,7 +511,11 @@ namespace MuhasebeApi.Models
 
                 entity.Property(e => e.Urharid).HasColumnName("urharid");
 
-                entity.Property(e => e.Barkodno).HasColumnName("barkodno");
+                entity.Property(e => e.Barkodno)
+                    .IsRequired()
+                    .HasColumnName("barkodno")
+                    .HasMaxLength(13)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Brfiyat).HasColumnName("brfiyat");
 

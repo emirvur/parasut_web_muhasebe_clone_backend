@@ -7,7 +7,7 @@ namespace MuhasebeApi.Models
     {
         public int Urharid { get; set; }
         public int? Fatid { get; set; }
-        public int Barkodno { get; set; }
+        public string Barkodno { get; set; }
         public float Miktar { get; set; }
         public float? Brfiyat { get; set; }
         public float? Vergi { get; set; }

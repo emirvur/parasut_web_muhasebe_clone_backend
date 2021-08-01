@@ -7,16 +7,17 @@ namespace MuhasebeApi.Models
 {
     public class dtogunceldurum
     {
-        public dtogunceldurum( int fattur, DateTime? vade, DateTime? ode
+        public dtogunceldurum( string fata,int fattur, DateTime? vade, DateTime? ode
           , float? tahsal, float? tahst, float? od, float? odet
          )
         {
+            this.fatad = fata;
             this.fatTur = fattur; this.vadesi = vade; this.odenesi = ode; this.tahsalin = tahsal;
 
             this.tahstop = tahst; this.odemod = od; this.odemtop = odet;
 
         }
-      
+        public string fatad { get; set; }
 
         public int fatTur { get; set; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UrunhareketsController : ControllerBase
@@ -58,7 +60,7 @@ namespace MuhasebeApi.Controllers
 
 
         [HttpGet("b/{bn}")]
-        public async Task<ActionResult<IEnumerable<dtourungecmisi>>> GetUrungecmisi(int bn)
+        public async Task<ActionResult<IEnumerable<dtourungecmisi>>> GetUrungecmisi(string bn)
         {
             return await _context.Urunhareket.Where(a=>a.Barkodno==bn).Include(c => c.Fat).Select(v => new dtourungecmisi(v.Fatid??-1,v.Fat.FatTur,v.Fat.Duztarih, v.Miktar, v.Fat.Cari.Cariunvani
                  )).ToListAsync();
@@ -82,15 +84,16 @@ namespace MuhasebeApi.Controllers
 
 
         [HttpGet("st/{id}")]
-        public async Task<ActionResult<IEnumerable<dtostokdetaysat>>> getstoksatis(int id)
+        public async Task<ActionResult<IEnumerable<dtostokdetaysat>>> getstoksatis(string id)
         {
-            return await _context.Urunhareket.Where(m => m.Barkodno == id).Where(n=>n.Fat.FatTur==1).Include(c => c.Fat).Select(v => new dtostokdetaysat(v.Fatid ?? -1, v.Barkodno,
+            return await _context.Urunhareket.Where(m => m.Barkodno == id).Where(n=>n.Fat.FatTur==1)
+                .Include(c => c.Fat).Select(v => new dtostokdetaysat(v.Fatid ?? -1, v.Barkodno,
                   v.Miktar, v.Brfiyat, v.Vergi ?? 0, v.Fat.Cari.Cariunvani,v.Fat.Duztarih,v.Fat.Fataciklama
                          )).ToListAsync();
         }
 
         [HttpGet("al/{id}")]
-        public async Task<ActionResult<IEnumerable<dtostokdetaysat>>> getsstokalis(int id)
+        public async Task<ActionResult<IEnumerable<dtostokdetaysat>>> getsstokalis(string id)
         {
             return await _context.Urunhareket.Where(m => m.Barkodno == id).Where(n => n.Fat.FatTur == 0).Include(c => c.Fat).Select(v => new dtostokdetaysat(v.Fatid ?? -1, v.Barkodno,
                       v.Miktar, v.Brfiyat, v.Vergi ?? 0, v.Fat.Cari.Cariunvani, v.Fat.Duztarih, v.Fat.Fataciklama

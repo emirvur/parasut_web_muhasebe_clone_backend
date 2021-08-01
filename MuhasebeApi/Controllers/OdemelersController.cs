@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OdemelersController : ControllerBase
@@ -47,70 +49,68 @@ namespace MuhasebeApi.Controllers
         [HttpPut]
         public async Task<IActionResult> PutOdemeler(odeput op)
         {
-            Odemeler od = await _context.Odemeler.SingleOrDefaultAsync(p => p.Odeid == op.id);
+            var transaction = _context.Database.BeginTransaction();
 
-            if ((od.Topmik-op.odendim) - op.odendim == 0)
-            {
-                List<Fatura> w = await _context.Fatura.Where(u => u.Odeid == op.id).ToListAsync();
-                w[0].Durum = 1;
-                od.Durum = 1;
-                od.Odendimik = od.Topmik;
-            }
-            else
-            {
-                od.Odendimik = od.Odendimik + op.odendim;
-            }
-            Odehar har = new Odehar();
-            har.Odeid = op.id;
-            har.Odenmistar = op.odent;
-            har.Kasaid = op.kasid;
-            har.Aciklama = op.acik;
-            har.Odendimik = op.odendim;
-
-        //    Kasa kasa = await _context.Kasa.FindAsync(op.kasid);
-          //  kasa.Bakiye = kasa.Bakiye -op.odendim;
+            try {
 
 
-          /*  Kasahar kashar = new Kasahar { };
-            kashar.Kasaid = op.kasid;
-            kashar.Durum = 2;
-            kashar.Miktar = op.odendim;
-            kashar.Miktaraciklamasi = op.acik;
-            kashar.Ohid = op.id;
-            List<Kasahar> khcol = new List<Kasahar>();
-            khcol.Add(kashar);
-            kasa.Kasahar = khcol;*/
+                Odemeler od = await _context.Odemeler.SingleOrDefaultAsync(p => p.Odeid == op.id);
 
-         //   har.Kasa = kasa;
-
-
-            _context.Odehar.Add(har);
-            await _context.SaveChangesAsync();
-            Kasahar kashar = new Kasahar { };
-            kashar.Kasaid = op.kasid;
-            kashar.Durum = 2;
-            kashar.Miktar = op.odendim;
-            kashar.Miktaraciklamasi = op.acik;
-            kashar.Ohid = har.Ohid;
-            kashar.Netbakiye = -1;
-            _context.Kasahar.Add(kashar);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OdemelerExists(op.id))
+                if ((od.Topmik - op.odendim) - op.odendim == 0)
                 {
-                    return NotFound();
+                    List<Fatura> w = await _context.Fatura.Where(u => u.Odeid == op.id).ToListAsync();
+                    w[0].Durum = 1;
+                    od.Durum = 1;
+                    od.Odendimik = od.Topmik;
                 }
                 else
                 {
-                    throw;
+                    od.Odendimik = od.Odendimik + op.odendim;
                 }
+                Odehar har = new Odehar();
+                har.Odeid = op.id;
+                har.Odenmistar = op.odent;
+                har.Kasaid = op.kasid;
+                har.Aciklama = op.acik;
+                har.Odendimik = op.odendim;
+
+
+
+                _context.Odehar.Add(har);
+                await _context.SaveChangesAsync();
+                Kasahar kashar = new Kasahar { };
+                kashar.Kasaid = op.kasid;
+                kashar.Durum = 0;
+                kashar.Miktar = op.odendim;
+                kashar.Miktaraciklamasi = op.acik;
+                kashar.Ohid = har.Ohid;
+                kashar.Netbakiye = -1;
+                _context.Kasahar.Add(kashar);
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OdemelerExists(op.id))
+                    {       transaction.Rollback();
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                transaction.Commit();
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                transaction.Rollback();
+                return NotFound();
             }
 
-            return Ok();
+
         }
 
         // POST: api/Odemelers

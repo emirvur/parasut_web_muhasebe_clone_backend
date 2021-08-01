@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
-{
+{    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class KasasController : ControllerBase
@@ -27,6 +28,11 @@ namespace MuhasebeApi.Controllers
             return await _context.Kasa.ToListAsync();
         }
 
+        [HttpGet("b")]
+        public  ActionResult<double> GetKasabakiyr()
+        {
+            return  _context.Kasa.Sum(a=>a.Bakiye);
+        }
         // GET: api/Kasas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Kasa>> GetKasa(int id)

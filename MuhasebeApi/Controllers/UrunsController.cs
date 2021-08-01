@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UrunsController : ControllerBase
@@ -67,25 +69,41 @@ namespace MuhasebeApi.Controllers
         }
 
 
+        [HttpGet("b/{id}")]
+        public async Task<ActionResult<dtourun>> getbarkod(string id)
+        {
+
+            return await _context.Urun.Where(c => c.Adi==id)
+                .Select(v => new dtourun(v.Barkodno, v.Adi, v.KategoriId
+                , v.Kategori.Katadi, v.Birim, v.Krseviye, v.Verharal, v.Verharsat, v.Kdv, v.Adet)).FirstOrDefaultAsync();
+
+        }
+
+        [HttpGet("c/{id}")]
+        public async Task<ActionResult<dtourun>> getbarkodno(string id)
+        {
+
+            return await _context.Urun.Where(c => c.Barkodno == id)
+                .Select(v => new dtourun(v.Barkodno, v.Adi, v.KategoriId
+                , v.Kategori.Katadi, v.Birim, v.Krseviye, v.Verharal, v.Verharsat, v.Kdv, v.Adet)).FirstOrDefaultAsync();
+
+        }
+
         // GET: api/Uruns/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Urun>> GetUrun(int id)
+        public  ActionResult<bool> GetUrun(string id)
         {
-            var urun = await _context.Urun.FindAsync(id);
+            return _context.Urun.Any(e => e.Barkodno == id);
 
-            if (urun == null)
-            {
-                return NotFound();
-            }
 
-            return urun;
+
         }
 
         // PUT: api/Uruns/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUrun(int id, Urun urun)
+        public async Task<IActionResult> PutUrun(string id, Urun urun)
         {
             if (id != urun.Barkodno)
             {
@@ -155,7 +173,7 @@ namespace MuhasebeApi.Controllers
             return urun;
         }
 
-        private bool UrunExists(int id)
+        private bool UrunExists(string id)
         {
             return _context.Urun.Any(e => e.Barkodno == id);
         }

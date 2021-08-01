@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,8 @@ using MuhasebeApi.Models;
 
 namespace MuhasebeApi.Controllers
 {
+
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TahsilatsController : ControllerBase
@@ -47,71 +50,70 @@ namespace MuhasebeApi.Controllers
         [HttpPut]
         public async Task<IActionResult> PutTahsilat(tahsput tp)
         {
-          Tahsilat tah =await _context.Tahsilat.SingleOrDefaultAsync(p => p.Tahsid == tp.id);
 
-            if ((tah.Topmik-tah.Alinmismik) - tp.alinmismik == 0)
-            {
-              List<Fatura> w= await _context.Fatura.Where(u => u.Tahsid == tp.id).ToListAsync();
-                w[0].Durum = 1;
-               
-                tah.Durum = 1;
-                tah.Alinmismik = tp.toplam;
-            }
-            else {
-                tah.Alinmismik = tah.Alinmismik + tp.alinmismik;
-            }
-            Tahshar har = new Tahshar();
-   har.Tahsid = tp.id;
-            har.Tediltar = tp.tedt;
-            har.Kasaid = tp.kasid;
-            har.Aciklama = tp.acik;
-            har.Alinmismik = tp.alinmismik;
+            var transaction = _context.Database.BeginTransaction();
 
-       //     Kasa kasa = await _context.Kasa.FindAsync(tp.kasid);
-         //           kasa.Bakiye = kasa.Bakiye + tp.alinmismik;
-    
-            
-       /*     Kasahar kashar = new Kasahar { };
-            kashar.Kasaid = tp.kasid;
-            kashar.Durum = 1;
-            kashar.Miktar = tp.alinmismik;
-            kashar.Miktaraciklamasi = tp.acik;
-          //  kashar.Thid = tp.id;
-            List<Kasahar> khcol = new List<Kasahar>();
-            khcol.Add(kashar);
-            kasa.Kasahar = khcol;*/
+            try {
+                Tahsilat tah = await _context.Tahsilat.SingleOrDefaultAsync(p => p.Tahsid == tp.id);
 
-        //    har.Kasa = kasa;
-
-          //  tah.Kasa = kasa;
-
-            _context.Tahshar.Add(har);
-            await _context.SaveChangesAsync();
-            Kasahar kashar = new Kasahar { };
-            kashar.Kasaid = tp.kasid;
-            kashar.Durum = 1;
-            kashar.Miktar = tp.alinmismik;
-            kashar.Miktaraciklamasi = tp.acik;
-            kashar.Thid = har.Thid;
-            kashar.Netbakiye = -1;
-            _context.Kasahar.Add(kashar);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TahsilatExists(tp.id))
+                if ((tah.Topmik - tah.Alinmismik) - tp.alinmismik == 0)
                 {
-                    return NotFound();
+                    List<Fatura> w = await _context.Fatura.Where(u => u.Tahsid == tp.id).ToListAsync();
+                    w[0].Durum = 1;
+
+                    tah.Durum = 1;
+                    tah.Alinmismik = tp.toplam;
                 }
                 else
                 {
-                    throw;
+                    tah.Alinmismik = tah.Alinmismik + tp.alinmismik;
                 }
+                Tahshar har = new Tahshar();
+                har.Tahsid = tp.id;
+                har.Tediltar = tp.tedt;
+                har.Kasaid = tp.kasid;
+                har.Aciklama = tp.acik;
+                har.Alinmismik = tp.alinmismik;
+
+
+                _context.Tahshar.Add(har);
+                await _context.SaveChangesAsync();
+                Kasahar kashar = new Kasahar { };
+                kashar.Kasaid = tp.kasid;
+                kashar.Durum = 1;
+                kashar.Miktar = tp.alinmismik;
+                kashar.Miktaraciklamasi = tp.acik;
+                kashar.Thid = har.Thid;
+                kashar.Netbakiye = -1;
+                _context.Kasahar.Add(kashar);
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TahsilatExists(tp.id))
+                    {
+                        transaction.Rollback();
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                transaction.Commit();
+                return Ok();
+
+            }
+            catch(Exception e)
+            {
+
+                transaction.Rollback();
+                return NotFound();
             }
 
-            return Ok();
+ 
         }
 
         // POST: api/Tahsilats

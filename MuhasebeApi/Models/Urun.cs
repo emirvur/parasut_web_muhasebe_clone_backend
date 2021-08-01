@@ -10,7 +10,7 @@ namespace MuhasebeApi.Models
             Urunhareket = new HashSet<Urunhareket>();
         }
 
-        public int Barkodno { get; set; }
+        public string Barkodno { get; set; }
         public string Adi { get; set; }
         public int KategoriId { get; set; }
         public string Birim { get; set; }

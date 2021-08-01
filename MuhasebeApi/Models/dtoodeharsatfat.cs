@@ -7,11 +7,11 @@ namespace MuhasebeApi.Models
 {
     public class dtoodeharsatfat
     {
-        public dtoodeharsatfat(int thid, int tahsid, DateTime tediltar, int kasaid, string ac,
+        public dtoodeharsatfat(int thid, int tahsid, DateTime tediltar, int kasaid, string kad,string ac,
          double alinm, string ad
       )
         {
-            this.ohid = thid; this.odeid = tahsid; this.odenmistar = tediltar; this.Kasaid = kasaid;
+            this.ohid = thid; this.odeid = tahsid; this.odenmistar = tediltar; this.Kasaid = kasaid; this.Kasaad = kad;
             this.odendimik = alinm; this.ad = ad;
 
 
@@ -22,6 +22,7 @@ namespace MuhasebeApi.Models
         public int odeid { get; set; }
         public DateTime odenmistar { get; set; }
         public int Kasaid { get; set; }
+        public string Kasaad { get; set; }
         public string Aciklama { get; set; }
         public double odendimik { get; set; }
 
