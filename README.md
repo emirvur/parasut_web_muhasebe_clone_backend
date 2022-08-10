@@ -6,6 +6,10 @@ Bu uygulama ön muhasebe programının temel modüllerini içerir.Paraşüt uygu
 - Bu uygulamanın front-end kodlarına erişmek için https://github.com/emirvur/parasut_mobil_frontend
 - Back-end kodlarına erişmek için https://github.com/emirvur/parasut_web_muhasebe_clone_backend
 
+<img src="screenshots/muhasebediagram.png"  width="700" height="500">
+<img src="screenshots/trigger.png"  width="700" height="500">
+<img src="screenshots/sp.png"  width="700" height="500">
+
 #Özellikler
 
 - [x] Satış Modülü
@@ -17,8 +21,4 @@ Bu uygulama ön muhasebe programının temel modüllerini içerir.Paraşüt uygu
 - [] E-Fatura Entegrasyonu
 
 
-<img src="screenshots/2022-08-10_17-35-40.png"  width="400" height="600">
-<img src="screenshots/satisfatura.png"  width="400" height="600">
-<img src="screenshots/faturadetay.png"  width="400" height="600">
-<img src="screenshots/tahsilatekle.png"  width="400" height="600">
-<img src="screenshots/urunliste.png"  width="400" height="600">
+
